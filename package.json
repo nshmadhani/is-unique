@@ -21,7 +21,7 @@
   "scripts": {
     "postinstall": "copy-avm-public public",
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run compile-aqua && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "compile-aqua": "aqua -i ./aqua/ -o ./src/_aqua",
