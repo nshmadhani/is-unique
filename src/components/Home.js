@@ -12,11 +12,13 @@ const Home = () => {
     const [assetList, setAssetList] = useState([]);
 
     const searchByContract = async (address) => {
+        console.log("Using Platform ID:", platform_id);
         const assets = await Provider.getAssetsForContract(platform_id, address)
         console.log(assets)
         setAssetList(assets)
     }
     const searchByOwner = async (address) => {
+        console.log("Using Platform ID:", platform_id);
         console.log(address)
         const assets = await Provider.getOwnedAssetsByCollection(platform_id, address)
         console.log(assets)

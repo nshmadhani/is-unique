@@ -1,7 +1,7 @@
 import "@fluencelabs/aqua-lib/builtin.aqua"
 
-const PEER_ID ?= "12D3KooWDUszU2NeWyUVjCXhGEt1MoZrhvdmaQQwtZUriuGN1jTr"
-const SERVICE_ID ?= "d6466cc0-a3b5-4a7b-a395-c5afb7772633"
+const PEER_ID ?= "12D3KooWSD5PToNiLQwKDXsu8JSysCwUt8BVUJEqCHcDe7P5h45e"
+const SERVICE_ID ?= "1595f878-725f-4dfc-b55f-b90cf37adfc3"
 
 service OpenseaTestnetApi:
   get_assets_by_contract(address: string) -> string

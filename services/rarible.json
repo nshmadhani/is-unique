@@ -1,0 +1,16 @@
+{
+    "conf": {
+        "name": "rarible_api",
+        "modules": [
+            {
+              "name": "curl_adapter",
+              "path": "./rarible/target/wasm32-wasi/release/rarible.wasm",
+              "mounted_binaries": [[[ "curl", "/usr/bin/curl"]]],
+              "mapped_dirs": [],
+              "preopened_files": [],
+              "logger_enabled": [true]
+            }          
+          ]
+    }
+}
+  

@@ -38,13 +38,13 @@
 
  #[marine]
  pub fn get_assets_by_contract(address: String) -> String {
-    let url = format!("https://testnets-api.opensea.io/api/v1/assets?asset_contract_address={}&order_direction=desc&offset=0&limit=20", address);
+    let url = format!("https://testnets-api.opensea.io/api/v1/assets?asset_contract_address={}&order_direction=desc&offset=0&limit=5", address);
     let result = curl(vec![url]);
     String::from_utf8(result.stdout).unwrap()
  }
  #[marine]
  pub fn get_assets_owned_by_address(owner_address: String) -> String {
-    let url = format!("https://testnets-api.opensea.io/api/v1/assets?owner={}&order_direction=desc&offset=0&limit=20", owner_address);
+    let url = format!("https://testnets-api.opensea.io/api/v1/assets?owner={}&order_direction=desc&offset=0&limit=5", owner_address);
     let result = curl(vec![url]);
     String::from_utf8(result.stdout).unwrap()
  }

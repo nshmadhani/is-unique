@@ -31,14 +31,14 @@
 
  #[marine]
  pub fn get_assets_by_contract(address: String) -> String {
-    let url = format!("https://ethereum-api.rarible.org/v0.1/nft/items/byCollection?collection={}&size=10", address);
+    let url = format!("https://ethereum-api-staging.rarible.org/v0.1/nft/items/byCollection?collection={}&size=10", address);
     let result = curl(vec![url]);
     String::from_utf8(result.stdout).unwrap()
  }
 
  #[marine]
  pub fn get_assets_owned_by_address(owner_address: String) -> String {
-    let url = format!("https://ethereum-api-staging.rarible.org/v0.1/nft/collections/byOwner?owner={}&size=10", owner_address);
+    let url = format!("https://ethereum-api-staging.rarible.org/v0.1/nft/items/byOwner?owner={}&size=10", owner_address);
     let result = curl(vec![url]);
 
     String::from_utf8(result.stdout).unwrap()

@@ -22,7 +22,7 @@ const RaribleAPI = {
                 contract
             );
             let response = JSON.parse(response_string);
-            let assets = response.assets;
+            let assets = response.items;
             let cleanedAssets = [];
             
             assets.forEach((asset) => {
@@ -43,7 +43,7 @@ const RaribleAPI = {
                 collection_addr
             );
             let response = JSON.parse(response_string);
-            let assets = response.assets;
+            let assets = response.items;
             let cleanedAssets = [];
             assets.forEach((asset) => {
                 cleanedAssets.push(this.cleanAsset(asset))
@@ -56,12 +56,13 @@ const RaribleAPI = {
     },
 
     cleanAsset(asset) {
+
         return  {
             description: asset.meta.description,
-            image_url: asset.meta.image.url,
+            image_url: asset.meta.image? asset.meta.image.url.ORIGINAL: "https://via.placeholder.com/150",
             name: asset.meta.name,
             asset_contract: asset.contract,
-            id: asset.id
+            id: asset.tokenId
         }
     }
 };
@@ -82,7 +83,7 @@ const OpenseaAPI = {
             })
             return cleanedAssets;
         } catch (error) {
-            console.log(error);
+            console.error(error);
             return [];
         }
     },
@@ -92,7 +93,8 @@ const OpenseaAPI = {
     ) {
         try {
             let response_string = await Opensea.get_assets_owned_by_address(
-                collection_addr
+                collection_addr, 
+                { ttl: 30000}
             );
             let response = JSON.parse(response_string);
             let assets = response.assets;
@@ -102,7 +104,7 @@ const OpenseaAPI = {
             })
             return cleanedAssets;
         } catch (error) {
-            console.log(error);
+            console.error(error);
             return [];
         }
     },
@@ -110,7 +112,7 @@ const OpenseaAPI = {
     cleanAsset(asset) {
         return  {
             description: asset.description,
-            image_url: asset.image_url,
+            image_url: asset.image_url ? asset.image_url : "https://via.placeholder.com/150",
             name: asset.name,
             asset_contract: asset.asset_contract,
             id: asset.token_id

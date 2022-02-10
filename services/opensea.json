@@ -4,7 +4,7 @@
         "modules": [
             {
               "name": "curl_adapter",
-              "path": "./artifacts/opensea.wasm",
+              "path": "./opensea/target/wasm32-wasi/release/opensea.wasm",
               "mounted_binaries": [[[ "curl", "/usr/bin/curl"]]],
               "mapped_dirs": [],
               "preopened_files": [],
