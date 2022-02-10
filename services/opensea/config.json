@@ -1,0 +1,15 @@
+{
+  "conf": {
+      "name": "opensea_api",
+      "modules": [
+          {
+            "name": "curl_adapter",
+            "path": "../artifacts/opensea.wasm",
+            "mounted_binaries": [[[ "curl", "/usr/bin/curl"]]],
+            "mapped_dirs": [],
+            "preopened_files": [],
+            "logger_enabled": [true]
+          }          
+        ]
+  }
+}

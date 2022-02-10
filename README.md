@@ -1,70 +1,147 @@
-# Getting Started with Create React App
+# Getting Started with Fluence
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This sample project demonstrates how fluence network can be accessed from the browser. As an example it retrieves the timestamp of the current time from the relay node. The project is based on an create-react-app template with slight modifications to integrate Fluence. The primary focus is the integration itself, i.e React could be swapped with a framework of your choice.
 
-## Available Scripts
+## Getting started
 
-In the project directory, you can run:
+Run aqua compiler in watch mode:
 
-### `npm start`
+```bash
+npm run watch-aqua
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Start the application
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```bash
+npm start
+```
 
-### `npm test`
+The browser window with `localhost:3000` should open
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## How it works
 
-### `npm run build`
+The application can be split into two main building blocks: the runtime provided by the `@fluencelabs/fluence` package and the compiler for the `Aqua` language. The workflow is as follows:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. You write aqua code
+2. Aqua gets compiled into the typescript file
+3. The typescript is build by the webpack (or any other tool of you choice) into js bunlde.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Project structure
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+aqua                    (1)
+ ┗ getting-started.aqua (3)
+node_modules
+public                  
+src
+ ┣ _aqua                (2)
+ ┃ ┗ getting-started.ts (4)
+ ┣ App.scss
+ ┣ App.tsx
+ ┣ index.css
+ ┣ index.tsx
+ ┣ logo.svg
+ ┗ react-app-env.d.ts    
+package-lock.json
+package.json          
+tsconfig.json
+```
 
-### `npm run eject`
+The project structure is based on the create-react-app template with some minor differences:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* `aqua` (1) contains the Aqua source code files. The complier picks them up and generate corresponding typescript file. See `getting-started.aqua` (3) and `getting-started.ts` respectively
+* `src/_aqua` (2) is where the generated target files are places. The target directory is conveniently placed inside the sources directory which makes it easy to import typescript functions from the application source code
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## npm packages and scripts
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+The following npm packages are used:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+* `@fluencelabs/fluence` - is the client for Fluence Network running inside the browser. See https://github.com/fluencelabs/fluence-js for additional information
+* `@fluencelabs/fluence-network-environment` - is the maintained list of Fluence networks and nodes to connect to.
+* `@fluencelabs/aqua` - is the command line interface for Aqua compiler. See https://github.com/fluencelabs/aqua for more information
+* `@fluencelabs/aqua-lib` - Aqua language standard library
+* `chokidar-cli` - A tool to watch for aqua file changes and compile them on the fly
 
-## Learn More
+The compilation of aqua code is implemented with these scripts:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```
+scripts: {
+...
+    "compile-aqua": "aqua -i ./aqua/ -o ./src/_aqua",
+    "watch-aqua": "chokidar \"**/*.aqua\" -c \"npm run compile-aqua\""
+}
+...
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The interface is pretty straightforward: you just specify the input and output directories for the compiler.
 
-### Code Splitting
+## Aqua code
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```
+import "@fluencelabs/aqua-lib/builtin.aqua"
 
-### Analyzing the Bundle Size
+func getRelayTime(relayPeerId: PeerId) -> u64: (1)
+    on relayPeerId:                            (2)
+        ts <- Peer.timestamp_ms()              (3)
+    <- ts                                      (4)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```
 
-### Making a Progressive Web App
+The code above defines a function which retrieves the current timestamp from the relay node. The function works as following:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+1. The function definition, specifying arguments and return value types
+2. Shift the execution to the peer with id equal to `relayPeerId`
+3. Calls built-in function on the current peer and stores the result into a variable
+4. Returns the result
 
-### Advanced Configuration
+The function gets compiled into typescript and can be called from the application code (see next section)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Application code
 
-### Deployment
+Let's take a look at how we can use Fluence from typecript.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+First, we need to import the relevant packages:
 
-### `npm run build` fails to minify
+```typescript
+import { createClient, FluenceClient } from "@fluencelabs/fluence";
+import { krasnodar } from "@fluencelabs/fluence-network-environment";
+import { getRelayTime } from "./_aqua/getting-started";
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Please notice that the function defined in Aqua has been compiled into typescript and can be directly imported. Using the code generated by the compiler is as easy as calling a function. The compiler generates all the boilerplate needed to send a particle into the network and wraps it into a single call. Note that all the type information and therefore type checking and code completion facilities are there!
+
+Next we initialize the client:
+
+```typescript
+const relayNode = krasnodar[0];
+
+function App() {
+  const [client, setClient] = useState<FluenceClient | null>(null);
+
+  ... 
+
+  useEffect(() => {
+    createClient(relayNode)
+      .then((client) => setClient(client))
+      .catch((err) => console.log("Client initialization failed", err));
+  }, [client]);
+```
+
+Every peer running in the browser must connect to the network through a relay node. We use the first node of the krasnodar network there. In our example we store the client using React `useState` facilities. Feel free to store wherever you store other application state.
+
+Executing Aqua is as easy as calling a function in typesctipt:
+
+```typescript
+  const doGetRelayTime = async () => {
+    if (!client) {
+      return;
+    }
+
+    const time = await getRelayTime(client, relayNode.peerId);
+    setRelayTime(new Date(time));
+  };
+```
+
+
+
+

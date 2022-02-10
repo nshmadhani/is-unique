@@ -1,0 +1,21 @@
+import "@fluencelabs/aqua-lib/builtin.aqua"
+
+const PEER_ID ?= "12D3KooWDUszU2NeWyUVjCXhGEt1MoZrhvdmaQQwtZUriuGN1jTr"
+const SERVICE_ID ?= "d6466cc0-a3b5-4a7b-a395-c5afb7772633"
+
+service RaribleTestNetApi:
+  get_assets_by_contract(address: string) -> string
+  get_assets_owned_by_address(owner_address: string) -> string
+
+
+func get_assets_by_contract(address:string) -> string :
+  on PEER_ID:
+    RaribleTestNetApi SERVICE_ID
+    res <- RaribleTestNetApi.get_assets_by_contract(address)
+  <- res
+
+func get_assets_owned_by_address(owner_address: string) -> string :
+  on PEER_ID:
+    RaribleTestNetApi SERVICE_ID
+    res <- RaribleTestNetApi.get_assets_owned_by_address(owner_address)
+  <- res
